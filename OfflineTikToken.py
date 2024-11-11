@@ -5,14 +5,14 @@ import inspect
 import re  
 import urllib.request  
 import hashlib  
-  
+
 class OfflineTikToken:  
     def __init__(self, debug=False):  
         self.debug = debug  
         self.current_dir = os.getcwd()  
         self.make_cache(self.current_dir)  
         os.environ["TIKTOKEN_CACHE_DIR"] = self.current_dir  
-        self.encoding = tiktoken.get_encoding("cl100k_base")  
+        self.enc = tiktoken.get_encoding("cl100k_base")  
   
     def make_cache(self, dir):  
         fun_text = inspect.getsource(tiktoken_ext.openai_public.cl100k_base)  
@@ -38,10 +38,15 @@ class OfflineTikToken:
                 print(f"file {cache_key} has already existed.")  
   
     def encode(self, text):  
-        return self.encoding.encode(text)  
+        return self.enc.encode(text)  
   
-# usage 
+    def decode(self, tokens):
+        return self.enc.decode(tokens)
+    
+# example  
 if __name__ == "__main__":  
     ott = OfflineTikToken(debug=True)  
-    encoded_text = ott.encode("Hello, world")  
-    print(encoded_text)
+    tokens = ott.encode("Hello, world")  
+    print(tokens)
+    text = ott.decode(tokens)
+    print(text)
